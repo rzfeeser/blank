@@ -1,0 +1,56 @@
+---
+- name: Gather facts on Brocade inventory (DS-6620B)
+  hosts: brocadeswitches
+  gather_facts: false
+  connection: local
+
+  vars:
+          credential:
+                  fos_ip_addr: "{{ fos_ip_addr }}"
+                  fos_user_name: "{{ fos_user_name }}"
+                  fos_password: "{{ fos_password }}"
+                  https: "{{ fos_https }}"
+          ufn: DELLEMC
+          banner: This platform is managed by Ansible
+
+  tasks:
+
+        - name: Gather facts about the Brocade DS-6620B Device
+          brocade_facts:
+                  credential: "{{ credential }}"
+                  vfid: -1
+                  timeout: 300
+                  gather_subset:
+                          - brocade_fibrechannel_switch
+          register: results
+
+        - name: Show the collected facts
+          debug:
+                  var: results
+                  verbosity: 1
+
+        - name: switch configuration
+          brocade_fibrechannel_switch:
+                  credential: "{{ credential }}"
+                  vfid: -1
+                  switch:
+                          banner: "{{ banner }}"
+                          user_friendly_name: "{{ ufn }}"
+          register: result
+
+        - name: gather facts about the Brocade DS-6620B Device
+          brocade_facts:
+                  credential: "{{ credential }}"
+                  vfid: -1
+                  timeout: 300
+                  gather_subset:
+                          - brocade_fibrechannel_switch
+
+        - name: Determine if the user_friendly_name was updated
+          debug:
+                  var: ansible_facts.brocade_fibrechannel_switch[0].user_friendly_name
+
+
+        - name: Determine if the banner was updated
+          debug:
+                  var: ansible_facts.brocade_fibrechannel_switch[0].banner 

@@ -1,0 +1,27 @@
+---
+- name: Gather facts on Brocade inventory (DS-6620B)
+  hosts: brocadeswitches
+  gather_facts: false
+  connection: local
+
+  vars:
+          credential:
+                  fos_ip_addr: "{{ fos_ip_addr }}"
+                  fos_user_name: "{{ fos_user_name }}"
+                  fos_password: "{{ fos_password }}"
+                  https: "{{ fos_https }}"
+
+  tasks:
+
+        - name: Gather facts about the Brocade DS-6620B Device
+          brocade_facts:
+                  credential: "{{ credential }}"
+                  vfid: -1
+                  timeout: 300
+                  gather_subset:
+                          - brocade_chassis_chassis
+          register: results
+
+        - name: Show the collected facts
+          debug:
+                  var: results
